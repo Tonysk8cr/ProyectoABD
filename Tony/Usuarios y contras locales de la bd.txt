@@ -1,0 +1,26 @@
+Hostname: localhost
+Puerto: 1521
+global db name orcl
+
+
+User SYS
+PWD: NuevaPassword123
+
+Username SYSTEM
+pwd Oracleanto04
+
+
+
+Nombre: INVENTARIO
+
+Usuario: INVENTARIO
+Contraseña: inventario123
+
+Hostname: localhost
+Puerto: 1521
+
+Service name: ORCLPDB
+
+
+
+
