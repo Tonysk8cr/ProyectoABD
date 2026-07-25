@@ -1,0 +1,52 @@
+--------------------------------------------------------------------------------
+-- STAGING AREA INVENTARIO
+--------------------------------------------------------------------------------
+
+CREATE TABLE SA_PROVEEDOR (
+    ID_PROVEEDOR       VARCHAR2(4000),
+    NOMBRE_PROVEEDOR   VARCHAR2(4000),
+    TELEFONO           VARCHAR2(4000),
+    COD_POSTAL         VARCHAR2(4000),
+    EMAIL              VARCHAR2(4000),
+    ESTADO             VARCHAR2(4000)
+);
+
+CREATE TABLE SA_EMPLEADO (
+    ID_EMPLEADO        VARCHAR2(4000),
+    NOMBRE             VARCHAR2(4000),
+    APELLIDO_P         VARCHAR2(4000),
+    APELLIDO_M         VARCHAR2(4000),
+    PUESTO             VARCHAR2(4000),
+    EMAIL              VARCHAR2(4000),
+    TELEFONO           VARCHAR2(4000),
+    ESTADO             VARCHAR2(4000)
+);
+
+CREATE TABLE SA_PRODUCTO (
+    ID_PRODUCTO        VARCHAR2(4000),
+    NOMBRE_PROD        VARCHAR2(4000),
+    DESCRIPCION_PROD   VARCHAR2(4000),
+    CATEGORIA_ID       VARCHAR2(4000),
+    PRECIO_UNIDAD      VARCHAR2(4000),
+    ESTADO             VARCHAR2(4000)
+);
+
+CREATE TABLE SA_ORDEN_COMPRA (
+    ID_ORDEN           VARCHAR2(4000),
+    NUMERO_FACTURA     VARCHAR2(4000),
+    PROVEEDOR_ID       VARCHAR2(4000),
+    EMPLEADO_ID        VARCHAR2(4000),
+    DESCRIPCION        VARCHAR2(4000),
+    METODO_ENVIO_ID    VARCHAR2(4000),
+    FECHA_ENVIO        VARCHAR2(4000),
+    FECHA_ORDEN        VARCHAR2(4000)
+);
+
+CREATE TABLE SA_MOVIMIENTO_INV (
+    ID_MOVIMIENTO      VARCHAR2(4000),
+    CANTIDAD_MOV       VARCHAR2(4000),
+    ID_PRODUCTO        VARCHAR2(4000),
+    ID_EMPLEADO        VARCHAR2(4000),
+    ID_INVENTARIO      VARCHAR2(4000),
+    FECHA              VARCHAR2(4000)
+);
