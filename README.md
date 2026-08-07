@@ -243,11 +243,3 @@ Su contenido puede utilizarse como referencia educativa y de aprendizaje, respet
 
 ---
 
-## Autor Principal
-
-**Anthony Emanuel Villalobos Hidalgo**
-
-Estudiante de Ingeniería en Sistemas Informática  
-Universidad Hispanoamericana
-
-
