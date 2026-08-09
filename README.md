@@ -110,33 +110,58 @@ Procedimientos principales:
 - CARGA_MOVIMIENTO_INV
 - CARGA_DATOS
 
+
+### ETL SA → DW
+
+Responsabilidades:
+
+- Extraer datos desde el STAGING AREA
+- Cargar información al DataWarehouse
+- Evitar registros duplicadosn
+- Evitar registros nulos
+- Evitar registros no activos
+- Covertir registros
+- Estandarizar fechas utilizando formato YYYYMMDD
+
+
+Procedimientos principales:
+
+- migrarproveedor
+- migrarempleado
+- migrarproducto
+- migrarordencompra
+- migrarmovimientoinv
+- migrardatos
+
 ---
 
 ## Estructura del Repositorio
 
 ```text
-├── DW/
-│   ├── Datawarehouse.pdf
-│   ├── Datawarehouse.sql
-│   ├── Diseño DW.xlsx
-│   ├── ProyectoABD_DW(ER).pdf
-│   └── UsuarioDWcreationscript.sql
+│   DocumentaciónABDG6.docx
+│   README.md
 │
-├── ETL/
-│   └── SA_ETL.sql
+├───Consultas
+│       01-UsuarioER.sql
+│       02-ModeloRecionalCreacion.sql
+│       03-UsuarioDW.sql
+│       04-DataWarehouseCreacion.sql
+│       05-UsuarioSA.sql
+│       06-StagingAreaCreacion.sql
+│       07-Accesos.sql
+│       08-StagingAreaETL.sql
+│       09-DataWarehouseETL.sql
 │
-├── Relacional/
-│   ├── ProyectoABD.sql
-│   ├── ProyectoABDER.pdf
-│   ├── Schema_original.pdf
-│   └── UsuarioERcreationscript.sql
+├───Diagramas
+│       01-EsquemaEROriginal.pdf
+│       02-EsquemaERActualizado.pdf
+│       03-DataWarehouseRelacional.pdf
+│       04-DiseñoDataWarehouse.xlsx
+│       05-DataWarehouse.pdf
+│       06-EstructuraSA.pdf
 │
-├── SA/
-│   ├── AccesosSA.sql
-│   ├── DWStagingAreaCreacion.sql
-│   └── UsuarioSAcreationscript.sql
-│
-└── Readme.md
+└───Env
+        Usuarios y contras locales de la bd.txt
 ```
 
 ---
@@ -191,6 +216,7 @@ Ejecutar los scripts dimensionales del esquema INVENTARIODW.
 
 ```sql
 EXECUTE PG_ETL_SA.CARGA_DATOS;
+EXECUTE INVENTARIODW.ETL_DW.MigrarDatos;
 ```
 
 ---
@@ -201,11 +227,11 @@ EXECUTE PG_ETL_SA.CARGA_DATOS;
 
 ### Anthony Emanuel Villalobos Hidalgo | [GitHub](https://github.com/Tonysk8cr) | [LinkedIn](https://www.linkedin.com/in/anthony-villalobos-55bb1a221/)
 
-### Santiago Fonseca
+### Santiago Fonseca Chinchilla | [GitHub](https://github.com/Siggy1604) | [LinkedIn](https://www.linkedin.com/in/santiago-f-a462a3123/)
 
-### José Castro
+### José Castro Fenández 
 
-### Kleyber Vindas
+### Kleyber Vindas Ocampo | [GitHub](https://github.com/KleyVindas) 
 
 ---
 
