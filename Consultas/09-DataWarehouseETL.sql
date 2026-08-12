@@ -161,6 +161,7 @@ CREATE OR REPLACE PACKAGE inventariodw.etl_dw AS
     PROCEDURE migrarproducto; --3
     PROCEDURE migrarordencompra; --4
     PROCEDURE migrarmovimientoinv; --5
+    PROCEDURE migrarfactinventransaccion;
 
     PROCEDURE migrardatos; --main
 END etl_dw;
@@ -1027,7 +1028,7 @@ CREATE OR REPLACE PACKAGE BODY inventariodw.etl_dw AS
         FROM
             inventariosa.sa_movimiento_inv movi
         WHERE
-            movi.id_movimiento NOT IN (
+            movi.fecha NOT IN (
                 SELECT
                     d.fec_id
                 FROM
@@ -1110,6 +1111,149 @@ CREATE OR REPLACE PACKAGE BODY inventariodw.etl_dw AS
         END LOOP;
     END migrarmovimientoinv;
 
+    --Migracion de la tabla de hechos
+    PROCEDURE migrarfactinventransaccion IS
+
+    v_error         INTEGER;
+    v_error_mensaje VARCHAR2(4000);
+
+    CURSOR c_datos IS
+        SELECT
+            mov.id_movimiento,
+            mov.cantidad_mov,
+            mov.id_producto,
+            mov.id_empleado,
+            mov.id_inventario,
+            mov.fecha,
+            det.orden_compra,
+            ord.proveedor_id
+
+        FROM inventariosa.sa_movimiento_inv mov
+
+        INNER JOIN inventariosa.sa_detalle_compra det
+            ON det.producto_id = mov.id_producto
+
+        INNER JOIN inventariosa.sa_orden_compra ord
+            ON ord.id_orden = det.orden_compra
+
+        WHERE NOT EXISTS (
+            SELECT 1
+            FROM inventariodw.fact_inv_transaccion f
+            WHERE f.inv_id_movimiento = TO_NUMBER(mov.id_movimiento)
+        );
+
+    BEGIN
+
+        FOR d_datos IN c_datos LOOP
+
+            v_error := 0;
+            v_error_mensaje := '';
+
+            -- VALIDAR MOVIMIENTO
+            IF d_datos.id_movimiento IS NULL THEN
+                v_error := 1;
+                v_error_mensaje :=
+                    v_error_mensaje || 'El ID del movimiento es nulo. ';
+            END IF;
+
+            -- VALIDAR PRODUCTO
+            IF d_datos.id_producto IS NULL THEN
+                v_error := 1;
+                v_error_mensaje :=
+                    v_error_mensaje || 'El ID del producto es nulo. ';
+            END IF;
+
+            -- VALIDAR EMPLEADO
+            IF d_datos.id_empleado IS NULL THEN
+                v_error := 1;
+                v_error_mensaje :=
+                    v_error_mensaje || 'El ID del empleado es nulo. ';
+            END IF;
+
+
+            -- VALIDAR INVENTARIO
+            IF d_datos.id_inventario IS NULL THEN
+                v_error := 1;
+                v_error_mensaje :=
+                    v_error_mensaje || 'El ID del inventario es nulo. ';
+            END IF;
+
+
+            -- VALIDAR CANTIDAD
+            IF d_datos.cantidad_mov IS NULL THEN
+                v_error := 1;
+                v_error_mensaje :=
+                    v_error_mensaje || 'La cantidad del movimiento es nula. ';
+            END IF;
+
+
+            -- VALIDAR FECHA
+            IF d_datos.fecha IS NULL THEN
+                v_error := 1;
+                v_error_mensaje :=
+                    v_error_mensaje || 'La fecha del movimiento es nula. ';
+            END IF;
+
+
+            -- VALIDAR ORDEN
+            IF d_datos.orden_compra IS NULL THEN
+                v_error := 1;
+                v_error_mensaje :=
+                    v_error_mensaje || 'No se encontró la orden de compra. ';
+            END IF;
+
+
+            -- VALIDAR PROVEEDOR
+            IF d_datos.proveedor_id IS NULL THEN
+                v_error := 1;
+                v_error_mensaje :=
+                    v_error_mensaje || 'No se encontró el proveedor. ';
+            END IF;
+
+
+            -- INSERTAR EN TABLA DE HECHOS
+            IF v_error = 0 THEN
+
+                INSERT INTO inventariodw.fact_inv_transaccion (
+                    inv_prv_id,
+                    inv_prd_id,
+                    inv_emp_id,
+                    inv_ord_id,
+                    inv_fec_id,
+                    inv_id_movimiento,
+                    inv_id_inventario,
+                    inv_cantidad_mov
+                )
+                VALUES (
+                    TO_NUMBER(d_datos.proveedor_id),
+                    TO_NUMBER(d_datos.id_producto),
+                    TO_NUMBER(d_datos.id_empleado),
+                    TO_NUMBER(d_datos.orden_compra),
+                    TO_NUMBER(d_datos.fecha),
+                    TO_NUMBER(d_datos.id_movimiento),
+                    TO_NUMBER(d_datos.id_inventario),
+                    TO_NUMBER(d_datos.cantidad_mov)
+                );
+
+            ELSE
+
+                INSERT INTO inventariodw.error_movimiento_inv (
+                    id_movimiento,
+                    fecha,
+                    error_msj
+                )
+                VALUES (
+                    d_datos.id_movimiento,
+                    d_datos.fecha,
+                    v_error_mensaje
+                );
+
+            END IF;
+
+        END LOOP;
+
+    END migrarfactinventransaccion;
+
         --PRINCIPAL
     PROCEDURE migrardatos AS
     BEGIN
@@ -1118,6 +1262,7 @@ CREATE OR REPLACE PACKAGE BODY inventariodw.etl_dw AS
         migrarproducto;
         migrarordencompra;
         migrarmovimientoinv;
+        migrarfactinventransaccion;
         COMMIT;
     END migrardatos;
 

@@ -50,3 +50,12 @@ CREATE TABLE SA_MOVIMIENTO_INV (
     ID_INVENTARIO      VARCHAR2(4000),
     FECHA              VARCHAR2(4000)
 );
+
+--La necesitamos para poder hacer bien el proceso de migracion de la tbala de hechos 
+CREATE TABLE SA_DETALLE_COMPRA (
+    ID_DETALLE       VARCHAR2(4000),
+    PRODUCTO_ID      VARCHAR2(4000),
+    ORDEN_COMPRA     VARCHAR2(4000),
+    CANTIDAD         VARCHAR2(4000),
+    DETALLE_PRECIO   VARCHAR2(4000)
+);

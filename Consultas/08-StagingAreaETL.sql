@@ -16,6 +16,8 @@ CREATE OR REPLACE PACKAGE pg_etl_sa AS
 
     PROCEDURE carga_orden_compra;
 
+    PROCEDURE carga_detalle_compra; --Necesario para poder hacer bien el proceso de migracion de la tabla de hechos
+
     PROCEDURE carga_movimiento_inv;
 
     PROCEDURE carga_datos;
@@ -150,7 +152,34 @@ CREATE OR REPLACE PACKAGE BODY pg_etl_sa AS
 
     END carga_orden_compra;
 
-    PROCEDURE carga_movimiento_inv AS -- Quinto proceso
+    PROCEDURE carga_detalle_compra AS -- Quinto proceso
+    BEGIN
+        INSERT INTO inventariosa.sa_detalle_compra (
+            id_detalle,
+            producto_id,
+            orden_compra,
+            cantidad,
+            detalle_precio
+        )
+            SELECT
+                id_detalle,
+                producto_id,
+                orden_compra,
+                cantidad,
+                detalle_precio
+            FROM
+                inventario.detalle_compra
+            WHERE
+                id_detalle NOT IN (
+                    SELECT
+                        id_detalle
+                    FROM
+                        inventariosa.sa_detalle_compra
+                );
+
+    END carga_detalle_compra;
+
+    PROCEDURE carga_movimiento_inv AS -- Sexto proceso
     BEGIN
         INSERT INTO inventariosa.sa_movimiento_inv (
             id_movimiento,
@@ -185,7 +214,8 @@ CREATE OR REPLACE PACKAGE BODY pg_etl_sa AS
         carga_empleado; --2
         carga_productos; --3
         carga_orden_compra; --4
-        carga_movimiento_inv; --5
+        carga_detalle_compra; --5 Necesario para poder hacer bien el proceso de migracion de la tabla de hechos
+        carga_movimiento_inv; --6
         COMMIT;
     END carga_datos;
 
